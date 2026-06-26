@@ -1,11 +1,6 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
-
+import { useContext } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { AdminProvider } from './context/AdminContext'
+import { AdminProvider, AdminContext } from './context/AdminContext'
 
 import Login from './views/Login'
 import Header from './components/layout/Header'
@@ -15,29 +10,34 @@ import Dashboard from './views/Dashboard'
 import DetalleCliente from './views/DetalleCliente'
 import ListaCliente from './views/ListaClientes'
 
-function App() {
-  const [count, setCount] = useState(0)
+function AppContent() {
+  const { admin } = useContext(AdminContext);
 
   return (
-    <>
-    <AdminProvider>
-      <Router>
-      <Header/>
-      <Nav/>
+    <Router>
+      <Header />
+      {admin && <Nav />}
+      
       <main style={{ minHeight: '80vh', padding: '20px' }}>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/clientes" element={<ListaCliente />} />
-            <Route path="/clientes/:id" element={<DetalleCliente />} />
-            <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
-        </main>
-      <Footer/>
-      </Router>
+        <Routes>
+          <Route path="/login" element={!admin ? <Login /> : <Navigate to="/dashboard" />} />
+          <Route path="/dashboard" element={admin ? <Dashboard /> : <Navigate to="/login" />} />
+          <Route path="/clientes" element={admin ? <ListaCliente /> : <Navigate to="/login" />} />
+          <Route path="/clientes/:id" element={admin ? <DetalleCliente /> : <Navigate to="/login" />} />
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </main>
+      <Footer />
+    </Router>
+  );
+}
+
+function App() {
+  return (
+    <AdminProvider>
+      <AppContent />
     </AdminProvider>
-    </>
   )
 }
 
-export default App
+export default App;
