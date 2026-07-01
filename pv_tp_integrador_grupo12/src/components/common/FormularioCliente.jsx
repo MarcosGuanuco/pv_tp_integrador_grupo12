@@ -52,9 +52,6 @@ const FormularioCliente = ({ onExito }) => {
 
       const data = await res.json();
       setForm(estadoInicial);
-
-      // avisamos al padre con el id creado; el padre decide
-      // cuándo cerrar el modal y mostrar el snackbar de éxito
       if (onExito) onExito(data.id);
     } catch (err) {
       setError("Error al crear el usuario");
@@ -73,17 +70,17 @@ const FormularioCliente = ({ onExito }) => {
       <TextField label="Teléfono" name="telefono" value={form.telefono} onChange={handleChange} required />
       <TextField label="Ciudad" name="ciudad" value={form.ciudad} onChange={handleChange} required />
 
-      <Button
+            <Button
         variant="contained"
         type="submit"
         sx={{
-          background: "linear-gradient(to right, #7aa9ff, #2c6644)",
+          background: "linear-gradient(to right, #141E30, #2c4766)",
           padding: 2,
           transition: "0.5s",
           "&:hover": {
-            background: "linear-gradient(to right, #5270a8, #204931)",
+            background: "linear-gradient(to right, #4c6faf, #2c4766)",
             transform: "scale(1.02)",
-          },
+          },  
         }}
       >
         Guardar
