@@ -12,7 +12,6 @@ export default function Header() {
         Sistema de Gestión de Clientes
       </Typography>
 
-      {/* Si hay un administrador logueado, muestra sus datos y el botón de cierre */}
       {admin && (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography variant="body1">
