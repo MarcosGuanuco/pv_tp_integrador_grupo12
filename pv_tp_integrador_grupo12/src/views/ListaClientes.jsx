@@ -1,51 +1,71 @@
-import { useState, useEffect } from 'react';
-import { Container, Typography, TextField, CircularProgress, Alert, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Button } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Container,
+  Typography,
+  TextField,
+  CircularProgress,
+  Alert,
+  Grid,
+  Card,
+  CardContent,
+  Button,
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Snackbar
+} from "@mui/material";
+
+import AddIcon from "@mui/icons-material/Add";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import FormUsuario from "../components/common/FormularioCliente";
 
 export default function ListaClientes() {
   const navigate = useNavigate();
   
   // Estados requeridos por la consigna
+
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [busqueda, setBusqueda] = useState('');
+  const [busqueda, setBusqueda] = useState("");
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, mensaje: "" });
+
+  const obtenerClientes = async () => {
+    try {
+      setLoading(true);
+
+      const res = await fetch("https://fakestoreapi.com/users");
+      if (!res.ok) throw new Error("Error al cargar clientes");
+
+      const data = await res.json();
+      setClientes(data);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const obtenerClientes = async () => {
-      try {
-        setLoading(true);
-        const respuesta = await fetch('https://fakestoreapi.com/users');
-        
-        if (!respuesta.ok) {
-          throw new Error('No se pudo conectar con el servidor de clientes.');
-        }
-        
-        const datos = await respuesta.json();
-        setClientes(datos);
-        setError(null);
-      } catch (err) {
-        setError(err.message || 'Ocurrió un error al cargar los datos.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     obtenerClientes();
   }, []);
 
-  const clientesFiltrados = clientes.filter(cliente => {
-    const termino = busqueda.toLowerCase();
-    const apellido = cliente.name?.lastname?.toLowerCase() || '';
-    const ciudad = cliente.address?.city?.toLowerCase() || '';
-    return apellido.includes(termino) || ciudad.includes(termino);
+  const clientesFiltrados = clientes.filter((c) => {
+    const t = busqueda.toLowerCase();
+    return (
+      (c.name?.lastname || "").toLowerCase().includes(t) ||
+      (c.address?.city || "").toLowerCase().includes(t)
+    );
   });
 
   if (loading) {
     return (
-      <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <CircularProgress size={60} />
+      <Container sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
+        <CircularProgress />
       </Container>
     );
   }
@@ -53,64 +73,123 @@ export default function ListaClientes() {
   if (error) {
     return (
       <Container sx={{ mt: 4 }}>
-        <Alert severity="error" variant="filled">
-          {error} — Intente recargar la página más tarde.
-        </Alert>
+        <Alert severity="error">{error}</Alert>
       </Container>
     );
   }
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
-        Panel de Control de Clientes
-      </Typography>
 
-      <TextField fullWidth label="Buscar cliente por apellido o ciudad..." variant="outlined" margin="normal" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} sx={{ mb: 3 }}/>
+      {/* HEADER */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+        <Typography variant="h4">
+          Lista de Clientes
+        </Typography>
 
-      <TableContainer component={Paper} elevation={3}>
-        <Table sx={{ minWidth: 650 }} aria-label="tabla de clientes">
-          <TableHead sx={{ backgroundColor: '#1976d2' }}>
-            <TableRow>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>ID</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Nombre Completo</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Email</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Teléfono</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Ciudad</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold', align: 'center' }}>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {clientesFiltrados.length > 0 ? (
-              clientesFiltrados.map((cliente) => (
-                <TableRow key={cliente.id} hover>
-                  <TableCell>{cliente.id}</TableCell>
-                  <TableCell sx={{ textTransform: 'capitalize' }}>
-                    {cliente.name.firstname} {cliente.name.lastname}
-                  </TableCell>
-                  <TableCell>{cliente.email}</TableCell>
-                  <TableCell>{cliente.phone}</TableCell>
-                  <TableCell sx={{ textTransform: 'capitalize' }}>{cliente.address.city}</TableCell>
-                  <TableCell>
-                    <Button variant="outlined" size="small" 
-                      startIcon={<VisibilityIcon />}
-                      onClick={() => navigate(`/clientes/${cliente.id}`)}
-                    >
-                      Ver Ficha
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
-                  No se encontraron clientes que coincidan con la búsqueda.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setModalAbierto(true)}
+        >
+          Nuevo cliente
+        </Button>
+      </Box>
+
+      {/* MODAL */}
+      <Dialog
+        open={modalAbierto}
+        onClose={() => setModalAbierto(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Crear cliente</DialogTitle>
+        <DialogContent>
+          <FormUsuario
+            onExito={(id) => {
+              setModalAbierto(false);
+              obtenerClientes();
+
+              setSnackbar({
+                open: true,
+                mensaje: `Cliente creado con ID: ${id}`
+              });
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* BUSCADOR */}
+      <TextField
+        fullWidth
+        label="Buscar por apellido o ciudad"
+        value={busqueda}
+        onChange={(e) => setBusqueda(e.target.value)}
+        sx={{ mb: 3 }}
+      />
+
+      {/* CARDS */}
+      <Grid container spacing={3}>
+        {clientesFiltrados.map((c) => (
+          <Grid item xs={12} sm={6} md={4} key={c.id}>
+            <Card
+              sx={{
+                boxShadow: 3,
+                borderRadius: 3,
+                transition: "0.3s",
+                "&:hover": { transform: "scale(1.03)" }
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6">
+                  {c.name?.firstname} {c.name?.lastname}
+                </Typography>
+
+                <Typography variant="body2">
+                  📧 {c.email}
+                </Typography>
+
+                <Typography variant="body2">
+                  📞 {c.phone}
+                </Typography>
+
+                <Typography variant="body2">
+                  📍 {c.address?.city}
+                </Typography>
+
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  startIcon={<VisibilityIcon />}
+                  sx={{ mt: 2 }}
+                  onClick={() => navigate(`/clientes/${c.id}`)}
+                >
+                  Ver ficha
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* SIN RESULTADOS */}
+      {!loading && clientesFiltrados.length === 0 && (
+        <Typography sx={{ textAlign: "center", mt: 4, color: "gray" }}>
+          No se encontraron clientes
+        </Typography>
+      )}
+
+      {/* SNACKBAR */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ open: false, mensaje: "" })}
+      >
+        <Alert severity="success" variant="filled">
+          {snackbar.mensaje}
+        </Alert>
+      </Snackbar>
+
     </Container>
   );
 }
