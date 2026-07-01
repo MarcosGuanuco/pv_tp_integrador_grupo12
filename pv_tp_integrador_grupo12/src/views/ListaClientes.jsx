@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import ClientesCards from "../components/common/ClientesCards";
+
 import {
   Container,
   Typography,
@@ -78,118 +80,68 @@ export default function ListaClientes() {
     );
   }
 
-  return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
+return (
+  <Container maxWidth="lg" sx={{ mt: 4 }}>
 
-      {/* HEADER */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-        <Typography variant="h4">
-          Lista de Clientes
-        </Typography>
-
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setModalAbierto(true)}
-        >
-          Nuevo cliente
-        </Button>
-      </Box>
-
-      {/* MODAL */}
-      <Dialog
-        open={modalAbierto}
-        onClose={() => setModalAbierto(false)}
-        fullWidth
-        maxWidth="sm"
+    <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+      <Typography variant="h4">Lista de Clientes</Typography>
+      <Button
+        variant="contained"
+        startIcon={<AddIcon />}
+        onClick={() => setModalAbierto(true)}
       >
-        <DialogTitle>Crear cliente</DialogTitle>
-        <DialogContent>
-          <FormUsuario
-            onExito={(id) => {
-              setModalAbierto(false);
-              obtenerClientes();
+        Nuevo cliente
+      </Button>
+    </Box>
 
-              setSnackbar({
-                open: true,
-                mensaje: `Cliente creado con ID: ${id}`
-              });
-            }}
+    <Dialog open={modalAbierto} onClose={() => setModalAbierto(false)} fullWidth maxWidth="sm">
+      <DialogTitle>Crear cliente</DialogTitle>
+      <DialogContent>
+        <FormUsuario
+          onExito={(id) => {
+            setModalAbierto(false);
+            obtenerClientes();
+            setSnackbar({ open: true, mensaje: `Cliente creado con ID: ${id}` });
+          }}
+        />
+      </DialogContent>
+    </Dialog>
+
+    <TextField
+      fullWidth
+      label="Buscar por apellido o ciudad"
+      value={busqueda}
+      onChange={(e) => setBusqueda(e.target.value)}
+      sx={{ mb: 3 }}
+    />
+
+    <Grid container spacing={3}>
+      {clientesFiltrados.map((c) => (
+        <Grid item xs={12} sm={6} md={4} key={c.id} sx={{ display: "flex" }}>
+          <ClientesCards
+            cliente={c}
+            onVerDetalle={(id) => navigate(`/clientes/${id}`)}
           />
-        </DialogContent>
-      </Dialog>
+        </Grid>
+      ))}
+    </Grid>
 
-      {/* BUSCADOR */}
-      <TextField
-        fullWidth
-        label="Buscar por apellido o ciudad"
-        value={busqueda}
-        onChange={(e) => setBusqueda(e.target.value)}
-        sx={{ mb: 3 }}
-      />
+    {clientesFiltrados.length === 0 && (
+      <Typography sx={{ textAlign: "center", mt: 4, color: "gray" }}>
+        No se encontraron clientes
+      </Typography>
+    )}
 
-      {/* CARDS */}
-      <Grid container spacing={3}>
-        {clientesFiltrados.map((c) => (
-          <Grid item xs={12} sm={6} md={4} key={c.id}>
-            <Card
-              sx={{
-                boxShadow: 3,
-                borderRadius: 3,
-                transition: "0.3s",
-                "&:hover": { transform: "scale(1.03)" }
-              }}
-            >
-              <CardContent>
-                <Typography variant="h6">
-                  {c.name?.firstname} {c.name?.lastname}
-                </Typography>
+    <Snackbar
+      open={snackbar.open}
+      autoHideDuration={3000}
+      onClose={() => setSnackbar({ open: false, mensaje: "" })}
+    >
+      <Alert severity="success" variant="filled">
+        {snackbar.mensaje}
+      </Alert>
+    </Snackbar>
 
-                <Typography variant="body2">
-                  📧 {c.email}
-                </Typography>
-
-                <Typography variant="body2">
-                  📞 {c.phone}
-                </Typography>
-
-                <Typography variant="body2">
-                  📍 {c.address?.city}
-                </Typography>
-
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  startIcon={<VisibilityIcon />}
-                  sx={{ mt: 2 }}
-                  onClick={() => navigate(`/clientes/${c.id}`)}
-                >
-                  Ver ficha
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-
-      {/* SIN RESULTADOS */}
-      {!loading && clientesFiltrados.length === 0 && (
-        <Typography sx={{ textAlign: "center", mt: 4, color: "gray" }}>
-          No se encontraron clientes
-        </Typography>
-      )}
-
-      {/* SNACKBAR */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
-        onClose={() => setSnackbar({ open: false, mensaje: "" })}
-      >
-        <Alert severity="success" variant="filled">
-          {snackbar.mensaje}
-        </Alert>
-      </Snackbar>
-
-    </Container>
-  );
+  </Container>
+);
 }
