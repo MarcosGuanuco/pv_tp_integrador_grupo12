@@ -14,15 +14,15 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 const ClienteCard = ({ cliente, onVerDetalle }) => {
   return (
     <Card
-      sx={{
-        height: "100%",
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        borderRadius: 4,
-        boxShadow: 3,
-      }}
+    sx={{
+      width: "210px",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      borderRadius: 4,
+      boxShadow: 3,
+      minHeight: 240, 
+    }}
     >
       <CardContent>
         <Stack
