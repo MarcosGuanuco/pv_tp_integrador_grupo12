@@ -25,7 +25,6 @@ export default function Footer() {
         alignItems={{ xs: "center", sm: "flex-start" }}
         spacing={3}
       >
-        {/* Izquierda — título */}
         <Stack spacing={0.5}>
           <Stack direction="row" alignItems="center" spacing={1}>
             <SchoolIcon sx={{ fontSize: 18, opacity: 0.8 }} />
@@ -43,7 +42,6 @@ export default function Footer() {
 
         <Divider orientation="vertical" flexItem sx={{ borderColor: "rgba(255,255,255,0.15)", display: { xs: "none", sm: "block" } }} />
 
-        {/* Derecha — integrantes */}
         <Stack spacing={0.75} alignItems={{ xs: "center", sm: "flex-start" }}>
           <Typography variant="body2" sx={{ opacity: 0.6, fontSize: 11, textTransform: "uppercase", letterSpacing: 1 }}>
             Integrantes

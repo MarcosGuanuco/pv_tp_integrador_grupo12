@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { TextField, Button, Box, Snackbar, Alert, MenuItem } from "@mui/material";
+
+import AddIcon from "@mui/icons-material/Add";
 const estadoInicial = {
   email: "",
   nombre: "",
@@ -70,8 +72,10 @@ const ciudades = [
         {c}</MenuItem>
         ))}</TextField>
             <Button
+            
         variant="contained"
         type="submit"
+        startIcon={<AddIcon />}
         sx={{
           background: "linear-gradient(to right, #141E30, #2c4766)",
           padding: 2,
