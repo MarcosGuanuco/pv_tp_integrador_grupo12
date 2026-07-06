@@ -33,17 +33,18 @@ export default function ListaClientes() {
   const [error, setError] = useState(null);
   const [busqueda, setBusqueda] = useState("");
   const [modalAbierto, setModalAbierto] = useState(false);
+  const cerrarModal = () => setModalAbierto(false);
   const [snackbar, setSnackbar] = useState({ open: false, mensaje: "" });
 
   const obtenerClientes = async () => {
     try {
       setLoading(true);
-
       const res = await fetch("https://fakestoreapi.com/users");
       if (!res.ok) throw new Error("Error al cargar clientes");
-
       const data = await res.json();
-      setClientes(data);
+
+      const clientesLocal = JSON.parse(localStorage.getItem("clientes")) || [];
+      setClientes([...data, ...clientesLocal]);
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -93,19 +94,21 @@ return (
         Nuevo cliente
       </Button>
     </Box>
-
-    <Dialog open={modalAbierto} onClose={() => setModalAbierto(false)} fullWidth maxWidth="sm">
-      <DialogTitle>Crear cliente</DialogTitle>
-      <DialogContent>
-        <FormUsuario
+    <Dialog open={modalAbierto} onClose={cerrarModal} fullWidth maxWidth="sm">
+      <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+         Crear cliente
+         <Button onClick={cerrarModal}
+         sx={{background: "rgba(231, 58, 58, 0.78)", color: "black", padding: 0.5}}
+         >✕</Button></DialogTitle>
+         <DialogContent>
+          <FormUsuario
           onExito={(id) => {
-            setModalAbierto(false);
+            cerrarModal();
             obtenerClientes();
             setSnackbar({ open: true, mensaje: `Cliente creado con ID: ${id}` });
-          }}
-        />
-      </DialogContent>
-    </Dialog>
+          }}/>
+          </DialogContent>
+          </Dialog>
 
     <TextField
       fullWidth
