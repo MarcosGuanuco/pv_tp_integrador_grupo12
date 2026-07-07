@@ -1,6 +1,25 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AdminContext } from '../context/AdminContext';
+import { Container, Typography, Card, CardContent, Grid, Button, CircularProgress, Box, Divider, Paper, Avatar } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import HomeIcon from '@mui/icons-material/Home';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
+
+const InfoCard = ({ icon, title, children }) => (
+  <Card variant="outlined" sx={{ borderRadius: 2, height: '100%', bgcolor: '#fdfdfd' }}>
+    <CardContent>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+        {icon}
+        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#1a237e' }}>{title}</Typography>
+      </Box>
+      <Divider sx={{ mb: 2 }} />
+      {children}
+    </CardContent>
+  </Card>
+);
 
 export default function DetalleCliente() {
   const { id } = useParams();
@@ -16,62 +35,69 @@ export default function DetalleCliente() {
   }, [id]);
 
   const handleEliminar = () => {
-    const confirmar = window.confirm(`¿Seguro que deseas eliminar a ${cliente.name.firstname}?`);
-    if (!confirmar) return;
-
+    if (!window.confirm(`¿Estás seguro de que deseas eliminar al cliente ${cliente.name?.firstname}?`)) return;
     fetch(`https://fakestoreapi.com/users/${id}`, { method: 'DELETE' })
-      .then(res => {
-        if (res.ok) {
-          alert('Cliente eliminado con éxito (Simulación DELETE realizada)');
-          navigate('/clientes');
-        }
-      })
-      .catch(err => console.error(err));
+      .then(() => {
+        alert('Cliente eliminado con éxito (Simulación HTTP DELETE completada).');
+        navigate('/clientes');
+      });
   };
 
-  if (!cliente) return <p>Cargando datos detallados...</p>;
+  if (!cliente) return <Container sx={{ display: 'flex', justifyContent: 'center', pt: 10 }}><CircularProgress /></Container>;
 
   return (
-    <div style={{ padding: '30px', fontFamily: 'Arial, sans-serif', lineHeight: '1.6' }}>
-      <button onClick={() => navigate('/clientes')} style={{ marginBottom: '20px', cursor: 'pointer' }}>
-        ← Volver a la Lista
-      </button>
+    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+      <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/clientes')} sx={{ mb: 3, fontWeight: 'bold' }}>
+        Volver a la Lista
+      </Button>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 style={{ textTransform: 'capitalize', color: '#1976d2', margin: 0 }}>
-          {cliente.name?.firstname} {cliente.name?.lastname}
-        </h1>
-        
-        {admin?.sector === 'Gerencia' && (
-          <button 
-            onClick={handleEliminar} style={{ backgroundColor: '#d32f2f', color: 'white', border: 'none', padding: '10px 15px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-            ❌ Eliminar Cliente de la Base de Datos
-          </button>
-        )}
-      </div>
+      <Paper elevation={4} sx={{ p: 4, borderRadius: 3, borderTop: '6px solid #1976d2' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2, mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ bgcolor: '#1976d2', width: 56, height: 56 }}><AccountCircleIcon sx={{ fontSize: 40 }} /></Avatar>
+            <Box>
+              <Typography variant="h4" sx={{ fontWeight: 800, textTransform: 'capitalize', color: '#2c3e50' }}>
+                {cliente.name?.firstname} {cliente.name?.lastname}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">ID de Registro: # {cliente.id}</Typography>
+            </Box>
+          </Box>
+          {admin?.sector === 'Gerencia' && (
+            <Button variant="contained" color="error" startIcon={<DeleteForeverIcon />} onClick={handleEliminar} sx={{ fontWeight: 'bold' }}>
+              Eliminar Cliente
+            </Button>
+          )}
+        </Box>
 
-      <p><strong>ID de Cliente:</strong> {cliente.id}</p>
-      
-      <hr />
+        <Divider sx={{ mb: 4 }} />
 
-      <h3>📞 Información de Contacto</h3>
-      <p><strong>Email:</strong> {cliente.email}</p>
-      <p><strong>Teléfono:</strong> {cliente.phone}</p>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <InfoCard icon={<AccountCircleIcon color="primary" />} title="Información de Contacto">
+              <Typography variant="body2" color="text.secondary"><strong>Email:</strong> {cliente.email}</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}><strong>Teléfono:</strong> {cliente.phone}</Typography>
+            </InfoCard>
+          </Grid>
 
-      <h3>🔑 Credenciales de Acceso (Base de Datos)</h3>
-      <p><strong>Usuario (Username):</strong> {cliente.username}</p>
-      <p><strong>Contraseña (Password):</strong> {cliente.password}</p>
+          <Grid item xs={12} sm={6}>
+            <InfoCard icon={<VpnKeyIcon color="primary" />} title="Credenciales del Sistema">
+              <Typography variant="body2" color="text.secondary"><strong>Usuario:</strong> {cliente.username}</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}><strong>Contraseña:</strong> {cliente.password}</Typography>
+            </InfoCard>
+          </Grid>
 
-      <h3>🏠 Dirección Completa</h3>
-      <p style={{ textTransform: 'capitalize' }}>
-        <strong>Calle y Número:</strong> {cliente.address?.street} N° {cliente.address?.number}
-      </p>
-      <p style={{ textTransform: 'capitalize' }}>
-        <strong>Ciudad:</strong> {cliente.address?.city}
-      </p>
-      <p>
-        <strong>Código Postal (Zipcode):</strong> {cliente.address?.zipcode}
-      </p>
-    </div>
+          <Grid item xs={12}>
+            <InfoCard icon={<HomeIcon color="primary" />} title="Ubicación y Domicilio Legal">
+              <Typography variant="body2" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
+                <strong>Calle y Número:</strong> {cliente.address?.street} N° {cliente.address?.number}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ textTransform: 'capitalize', mt: 1 }}>
+                <strong>Ciudad:</strong> {cliente.address?.city} — <strong>CP:</strong> {cliente.address?.zipcode}
+              </Typography>
+            </InfoCard>
+          </Grid>
+        </Grid>
+      </Paper>
+    </Container>
   );
 }
