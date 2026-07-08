@@ -7,12 +7,11 @@ export default function Header() {
   const { admin, logoutAdmin } = useContext(AdminContext);
 
   return (
-    <Box component="header" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 30px', backgroundColor: '#2c3e50', color: 'white' }}>
+    <Box component="header" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 30px',background: "linear-gradient(to right, #141E30, #2c4766)", color: 'white' }}>
       <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
         Sistema de Gestión de Clientes
       </Typography>
 
-      {/* Si hay un administrador logueado, muestra sus datos y el botón de cierre */}
       {admin && (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography variant="body1">
