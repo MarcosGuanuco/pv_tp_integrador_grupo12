@@ -27,7 +27,7 @@ export default function Dashboard() {
     const actividadGenerada = [
       ...locales.map(c => ({
         texto: "Se agregó el cliente",
-        nombre: ${c.name?.firstname || ""} ${c.name?.lastname || ""},
+       nombre: ${c.name?.firstname || ""} ${c.name?.lastname || ""},
         tipo: "Alta",
         color: "#2e7d32",
         chip: "success",
@@ -35,7 +35,7 @@ export default function Dashboard() {
       })),
       ...eliminados.map(id => ({
         texto: "Se eliminó el cliente",
-        nombre: ID #${id},
+       nombre: ID #${id},
         tipo: "Baja",
         color: "#c62828",
         chip: "error",
