@@ -4,9 +4,9 @@ import { AdminContext } from '../context/AdminContext';
 import { Container, Typography, Card, CardContent, Grid, Button, CircularProgress, Box, Divider, Paper, Avatar } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import HomeIcon from '@mui/icons-material/Home';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const InfoCard = ({ icon, title, children }) => (
   <Card variant="outlined" sx={{ borderRadius: 2, height: '100%', bgcolor: '#fdfdfd' }}>
@@ -54,7 +54,7 @@ export default function DetalleCliente() {
       <Paper elevation={4} sx={{ p: 4, borderRadius: 3, borderTop: '6px solid #1976d2' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2, mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Avatar sx={{ bgcolor: '#1976d2', width: 56, height: 56 }}><AccountCircleIcon sx={{ fontSize: 40 }} /></Avatar>
+            <Avatar src={`https://randomuser.me/api/portraits/men/${cliente.id}.jpg`} alt={cliente.name?.firstname}sx={{ width: 65, height: 65, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />
             <Box>
               <Typography variant="h4" sx={{ fontWeight: 800, textTransform: 'capitalize', color: '#2c3e50' }}>
                 {cliente.name?.firstname} {cliente.name?.lastname}
