@@ -1,5 +1,5 @@
-# Panel de Control de Clientes en Tiempo Real 🚀
-### Trabajo Práctico Integrador Grupal - Programación Visual 2026
+# Panel de Control de Clientes en Tiempo Real 
+### Trabajo Práctico Integrador Grupal - Programación Visual 2026 Grupo 12
 
 Este proyecto consiste en el desarrollo de una aplicación web funcional de nivel profesional utilizando *React* y *Vite. La aplicación actúa como un Panel de Control que se conecta de forma asrincrónica a la API pública **FakeStore API* para la gestión de usuarios, abandonando el uso de datos en memoria local.
 
